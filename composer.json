@@ -10,5 +10,8 @@
     ],
     "require": {
         "nosto/php-sdk": "1.5.*"
+    },
+    "require-dev": {
+        "codeception/codeception": "*"
     }
 }

@@ -1,1 +1,4 @@
 vendor
+
+tests/_output/*
+acceptance.suite.yml

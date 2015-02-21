@@ -1,0 +1,38 @@
+# Codeception Test Suite Configuration
+
+# suite for acceptance tests.
+# perform tests in browser using the WebDriver or PhpBrowser.
+# If you need both WebDriver and PHPBrowser tests - create a separate suite.
+
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - PhpBrowser
+        - AcceptanceHelper
+
+env:
+    CE1620:
+         modules:
+            config:
+              PhpBrowser:
+                  url: 'http://localhost/magento/1.6.2.0/'
+              AcceptanceHelper:
+                  version: 1.6.2.0
+                  baseUrl: 'http://localhost/magento/1.6.2.0/'
+
+    CE1702:
+         modules:
+            config:
+              PhpBrowser:
+                  url: 'http://localhost/magento/1.7.0.2/'
+              AcceptanceHelper:
+                  version: 1.7.0.2
+                  baseUrl: 'http://localhost/magento/1.7.0.2/'
+    CE1810:
+         modules:
+            config:
+              PhpBrowser:
+                  url: 'http://localhost/magento/1.8.1.0/'
+              AcceptanceHelper:
+                  version: 1.8.1.0
+                  baseUrl: 'http://localhost/magento/1.8.1.0/'
