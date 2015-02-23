@@ -6,6 +6,7 @@ namespace Codeception\Module;
 
 require_once 'tests/_support/Product.php';
 require_once 'tests/_support/Category.php';
+require_once 'tests/_support/Customer.php';
 
 class AcceptanceHelper extends \Codeception\Module
 {
@@ -26,10 +27,22 @@ class AcceptanceHelper extends \Codeception\Module
     }
 
     /**
-     * Adds a product to the shopping cart.
-     * The product is the same as the one view on `$this->getProductPageUrl()`.
+     * Logs in a customer in the Magento frontend currently being tested.
      *
-     * @see AcceptanceHelper::getProductPageUrl
+     * @param \AcceptanceTester $I
+     * @param Customer $customer
+     */
+    public function login(\AcceptanceTester $I, Customer $customer)
+    {
+        $I->amOnPage('index.php/customer/account/login');
+        $I->fillField('#email', $customer->email);
+        $I->fillField('#pass', $customer->password);
+        $I->click('send');
+    }
+
+    /**
+     * Adds a product to the shopping cart.
+     *
      * @param \AcceptanceTester $I
      * @param \Codeception\Module\Product $product
      */
@@ -44,7 +57,6 @@ class AcceptanceHelper extends \Codeception\Module
      * The product is hard-coded.
      *
      * @return \Codeception\Module\Product
-     * @throws \Exception
      */
     public function getProduct()
     {
@@ -58,7 +70,6 @@ class AcceptanceHelper extends \Codeception\Module
      * Returns a category object for the Magento version currently being tested.
      *
      * @return \Codeception\Module\Category
-     * @throws \Exception
      */
     public function getCategory()
     {
@@ -69,9 +80,19 @@ class AcceptanceHelper extends \Codeception\Module
     }
 
     /**
+     * Returns a customer object for the Magento version currently being tested.
+     *
+     * @return \Codeception\Module\Customer
+     */
+    public function getCustomer()
+    {
+        return new Customer();
+    }
+
+    /**
      * Returns the shopping cart page URL for the Magento version currently being tested.
      *
-     * @return string the url.
+     * @return string
      */
     public function getCartPageUrl()
     {
@@ -81,7 +102,7 @@ class AcceptanceHelper extends \Codeception\Module
     /**
      * Returns the search page URL for the Magento version currently being tested.
      *
-     * @return string the url.
+     * @return string
      */
     public function getSearchPageUrl()
     {
