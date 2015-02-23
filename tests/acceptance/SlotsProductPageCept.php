@@ -1,7 +1,7 @@
 <?php
 $I = new AcceptanceTester($scenario);
 $I->wantTo('see slots on the product page');
-$product = $I->getSimpleProduct();
+$product = $I->getProduct();
 $I->amOnPage($product->url);
 
 $I->seeGlobalSlots($I);

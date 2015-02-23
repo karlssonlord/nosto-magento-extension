@@ -2,7 +2,7 @@
 $I = new AcceptanceTester($scenario);
 $I->wantTo('see product tagging');
 
-$product = $I->getSimpleProduct();
+$product = $I->getProduct();
 $I->amOnPage($product->url);
 $I->see($product->url, '.nosto_product .url');
 $I->see($product->productId, '.nosto_product .product_id');

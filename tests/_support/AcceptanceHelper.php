@@ -40,13 +40,13 @@ class AcceptanceHelper extends \Codeception\Module
     }
 
     /**
-     * Returns a "Simple Product" for the Magento version currently being tested.
+     * Returns a product for the Magento version currently being tested.
      * The product is hard-coded.
      *
      * @return \Codeception\Module\Product
      * @throws \Exception
      */
-    public function getSimpleProduct()
+    public function getProduct()
     {
         $product = new Product();
         $product::$baseUrl = $this->config['baseUrl'];

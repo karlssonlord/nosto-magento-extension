@@ -2,7 +2,7 @@
 $I = new AcceptanceTester($scenario);
 $I->wantTo('see cart tagging');
 
-$product = $I->getSimpleProduct();
+$product = $I->getProduct();
 $I->addProductToCart($I, $product);
 $I->amOnPage('/');
 $I->see($product->productId, '.nosto_cart .line_item .product_id');

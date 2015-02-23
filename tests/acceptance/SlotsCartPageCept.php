@@ -1,7 +1,7 @@
 <?php
 $I = new AcceptanceTester($scenario);
 $I->wantTo('see slots on the cart page');
-$product = $I->getSimpleProduct();
+$product = $I->getProduct();
 $I->addProductToCart($I, $product);
 $I->amOnPage($I->getCartPageUrl());
 
