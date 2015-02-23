@@ -44,7 +44,7 @@ class Product
         }
         foreach (self::$data[$version] as $property  => $value) {
             if ($property === 'url' || $property === 'imageUrl') {
-                $value = self::$baseUrl.$value;
+                //$value = self::$baseUrl.$value;
             }
             $this->{$property} = $value;
         }

@@ -35,9 +35,9 @@ class AcceptanceHelper extends \Codeception\Module
     public function login(\AcceptanceTester $I, Customer $customer)
     {
         $I->amOnPage('index.php/customer/account/login');
-        $I->fillField('#email', $customer->email);
-        $I->fillField('#pass', $customer->password);
-        $I->click('send');
+        $I->fillField(['id' => 'email'], $customer->email);
+        $I->fillField(['id' => 'pass'], $customer->password);
+        $I->click(['id' => 'send2']);
     }
 
     /**
@@ -50,6 +50,42 @@ class AcceptanceHelper extends \Codeception\Module
     {
         $I->amOnPage($product->url);
         $I->submitForm('#product_addtocart_form', array());
+    }
+
+    /**
+     * Does a new order and stops on the order confirmation page.
+     * If no customer is given, the guest checkout will be done.
+     *
+     * @param \AcceptanceTester $I
+     * @param \Codeception\Module\Customer $customer
+     */
+    public function doOrder(\AcceptanceTester $I, Customer $customer = null)
+    {
+        // todo: guest checkout
+        if ($customer !== null) {
+            $this->login($I, $customer);
+        }
+
+        $I->amOnPage('index.php/checkout/onepage');
+
+        // Billing information
+//        $I->fillField(['id' => 'billing[street][]'], 'Street Name');
+//        $I->fillField(['id' => 'billing[city]'], 'City Name');
+//        //$I->selectOption('billing[region_id]', 'Alabama'); // todo
+//        $I->fillField(['id' => 'billing[postcode]'], '00000');
+//        $I->fillField(['id' => 'billing[telephone]'], '123123');
+
+        $I->click('#billing-buttons-container button');
+
+        // Shipping method
+        $I->click('#shipping-method-buttons-container button');
+
+        // Payment information
+        $I->selectOption('payment[method]', 'Check / Money order ');
+        $I->click('#payment-buttons-container button');
+
+        // Order review
+        $I->click('#review-buttons-container button');
     }
 
     /**
