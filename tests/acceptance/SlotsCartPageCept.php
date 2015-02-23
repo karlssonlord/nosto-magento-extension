@@ -1,7 +1,8 @@
 <?php
 $I = new AcceptanceTester($scenario);
 $I->wantTo('see slots on the cart page');
-$I->addProductToCart($I);
+$product = $I->getSimpleProduct();
+$I->addProductToCart($I, $product);
 $I->amOnPage($I->getCartPageUrl());
 
 $I->seeGlobalSlots($I);

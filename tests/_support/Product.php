@@ -40,7 +40,7 @@ class Product
     public function load($version)
     {
         if (!isset(self::$data[$version])) {
-            throw new \Exception(sprintf('SimpleProduct does not have any data defined for Magento %s', $version));
+            throw new \Exception(sprintf('Product does not have any data defined for Magento %s', $version));
         }
         foreach (self::$data[$version] as $property  => $value) {
             if ($property === 'url' || $property === 'imageUrl') {

@@ -1,7 +1,8 @@
 <?php
 $I = new AcceptanceTester($scenario);
 $I->wantTo('see slots on the category page');
-$I->amOnPage($I->getCategoryPageUrl());
+$category = $I->getCategory();
+$I->amOnPage($category->url);
 
 $I->seeGlobalSlots($I);
 

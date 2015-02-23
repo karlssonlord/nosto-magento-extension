@@ -5,6 +5,7 @@ namespace Codeception\Module;
 // all public methods declared in helper class will be available in $I
 
 require_once 'tests/_support/Product.php';
+require_once 'tests/_support/Category.php';
 
 class AcceptanceHelper extends \Codeception\Module
 {
@@ -30,11 +31,10 @@ class AcceptanceHelper extends \Codeception\Module
      *
      * @see AcceptanceHelper::getProductPageUrl
      * @param \AcceptanceTester $I
+     * @param \Codeception\Module\Product $product
      */
-    public function addProductToCart(\AcceptanceTester $I)
+    public function addProductToCart(\AcceptanceTester $I, Product $product)
     {
-        $I->wantTo('add a product to cart');
-        $product = $this->getSimpleProduct();
         $I->amOnPage($product->url);
         $I->submitForm('#product_addtocart_form', array());
     }
@@ -55,54 +55,36 @@ class AcceptanceHelper extends \Codeception\Module
     }
 
     /**
-     * Returns the shopping cart page URL for the Magento version currently being tested.
+     * Returns a category object for the Magento version currently being tested.
      *
-     * @return string the url.
-     * @throws \Exception if the Magento version cannot be determined or is not supported.
+     * @return \Codeception\Module\Category
+     * @throws \Exception
      */
-    public function getCartPageUrl()
+    public function getCategory()
     {
-        switch ($this->config['version']) {
-            case '1.8.1.0':
-                return 'index.php/checkout/cart';
-
-            default:
-                throw new \Exception(sprintf('Invalid Magento version "%s".', $this->config['version']));
-        }
+        $category = new Category();
+        $category::$baseUrl = $this->config['baseUrl'];
+        $category->load($this->config['version']);
+        return $category;
     }
 
     /**
-     * Returns a category page URL for the Magento version currently being tested.
-     * The category is hard-coded.
+     * Returns the shopping cart page URL for the Magento version currently being tested.
      *
      * @return string the url.
-     * @throws \Exception if the Magento version cannot be determined or is not supported.
      */
-    public function getCategoryPageUrl()
+    public function getCartPageUrl()
     {
-        switch ($this->config['version']) {
-            case '1.8.1.0':
-                return 'index.php/electronics/computers.html';
-
-            default:
-                throw new \Exception(sprintf('Invalid Magento version "%s".', $this->config['version']));
-        }
+        return 'index.php/checkout/cart';
     }
 
     /**
      * Returns the search page URL for the Magento version currently being tested.
      *
      * @return string the url.
-     * @throws \Exception if the Magento version cannot be determined or is not supported.
      */
     public function getSearchPageUrl()
     {
-        switch ($this->config['version']) {
-            case '1.8.1.0':
-                return 'index.php/catalogsearch/result/?q=nosto';
-
-            default:
-                throw new \Exception(sprintf('Invalid Magento version "%s".', $this->config['version']));
-        }
+        return 'index.php/catalogsearch/result/?q=nosto';
     }
 }
