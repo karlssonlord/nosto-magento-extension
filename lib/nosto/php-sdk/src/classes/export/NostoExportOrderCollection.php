@@ -37,13 +37,8 @@
  * Order collection for historical data exports.
  * Supports only items implementing "NostoOrderInterface".
  */
-class NostoExportOrderCollection extends NostoExportCollection
+class NostoExportOrderCollection extends NostoOrderCollection implements NostoExportCollectionInterface
 {
-    /**
-     * @inheritdoc
-     */
-    protected $validItemType = 'NostoOrderInterface';
-
     /**
      * @inheritdoc
      */
@@ -54,14 +49,15 @@ class NostoExportOrderCollection extends NostoExportCollection
         foreach ($this->getArrayCopy() as $item) {
             $data = array(
                 'order_number' => $item->getOrderNumber(),
+                'order_status_code' => $item->getOrderStatus()->getCode(),
+                'order_status_label' => $item->getOrderStatus()->getLabel(),
                 'created_at' => Nosto::helper('date')->format($item->getCreatedDate()),
                 'buyer' => array(
                     'first_name' => $item->getBuyerInfo()->getFirstName(),
                     'last_name' => $item->getBuyerInfo()->getLastName(),
                     'email' => $item->getBuyerInfo()->getEmail(),
                 ),
-				'payment_provider' => $item->getPaymentProvider(),
-				'payment_status' => $item->getPaymentStatus(),
+                'payment_provider' => $item->getPaymentProvider(),
                 'purchased_items' => array(),
             );
             foreach ($item->getPurchasedItems() as $orderItem) {

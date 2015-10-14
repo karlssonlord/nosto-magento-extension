@@ -1,6 +1,6 @@
 <?php
 
-class NostoProduct implements NostoProductInterface
+class NostoProduct implements NostoProductInterface, NostoValidatableInterface
 {
 	public function getUrl()
 	{
@@ -57,5 +57,19 @@ class NostoProduct implements NostoProductInterface
 	public function getDatePublished()
 	{
 		return '2013-01-05';
+	}
+	public function getValidationRules()
+	{
+		return array(
+			array(array('url', 'productId', 'name', 'imageUrl', 'price', 'listPrice', 'currencyCode', 'availability'), 'required')
+		);
+	}
+	public function __get($name)
+	{
+		$getter = 'get'.$name;
+		if (method_exists($this, $getter)) {
+			return $this->{$getter}();
+		}
+		throw new Exception(sprintf('Property `%s.%s` is not defined.', get_class($this), $name));
 	}
 }
