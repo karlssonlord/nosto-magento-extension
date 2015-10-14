@@ -35,7 +35,7 @@
  */
 class Nosto_Tagging_Block_Adminhtml_Iframe extends Mage_Adminhtml_Block_Template
 {
-    const DEFAULT_ADMIN_IFRAME_ORIGIN = 'https://my.nosto.com';
+    const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/magento-([a-z0-9]+)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
 
     /**
      * @var string the iframe url if SSO to Nosto can be made.
@@ -66,10 +66,13 @@ class Nosto_Tagging_Block_Adminhtml_Iframe extends Mage_Adminhtml_Block_Template
         $session = Mage::getSingleton('adminhtml/session');
         if ($session !== null) {
             $nostoMessage = $session->getData('nosto_message');
-            if (is_array($nostoMessage)) {
+            if (!empty($nostoMessage)) {
                 if (isset($nostoMessage['type'], $nostoMessage['code'])) {
                     $params['message_type'] = $nostoMessage['type'];
                     $params['message_code'] = $nostoMessage['code'];
+                    if (isset($nostoMessage['text'])) {
+                        $params['message_text'] = $nostoMessage['text'];
+                    }
                 }
                 $session->setData('nosto_message', null);
             }
@@ -114,6 +117,6 @@ class Nosto_Tagging_Block_Adminhtml_Iframe extends Mage_Adminhtml_Block_Template
     public function getIframeOrigin()
     {
         return (string)Mage::app()->getRequest()
-            ->getEnv('NOSTO_IFRAME_ORIGIN', self::DEFAULT_ADMIN_IFRAME_ORIGIN);
+            ->getEnv('NOSTO_IFRAME_ORIGIN_REGEXP', self::DEFAULT_IFRAME_ORIGIN_REGEXP);
     }
 }

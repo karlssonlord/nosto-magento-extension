@@ -26,45 +26,29 @@
  */
 
 /**
- * Meta data class which holds information about Nosto account billing.
- * This is used during the Nosto account creation.
+ * Base class for Nosto models that share basic functionality.
  *
  * @category Nosto
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Nosto_Tagging_Model_Meta_Account_Billing extends Mage_Core_Model_Abstract implements NostoAccountMetaDataBillingDetailsInterface
+class Nosto_Tagging_Model_Base extends Mage_Core_Model_Abstract
 {
     /**
-     * @var string country ISO (ISO 3166-1 alpha-2) code for billing details.
-     */
-    protected $_country;
-
-    /**
-     * @inheritdoc
-     */
-    protected function _construct()
-    {
-        $this->_init('nosto_tagging/meta_account_billing');
-    }
-
-    /**
-     * Loads the meta data for the given store.
+     * Returns a protected/private property value by invoking it's public getter.
      *
-     * @param Mage_Core_Model_Store $store the store view to load the data for.
-     */
-    public function loadData(Mage_Core_Model_Store $store)
-    {
-        $this->_country = $store->getConfig('general/country/default');
-    }
-
-    /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for billing details country.
+     * The getter names are assumed to be the property name in camel case with preceding word "get".
      *
-     * @return string the country ISO code.
+     * @param string $name the property name.
+     * @return mixed the property value.
+     * @throws NostoException if public getter does not exist.
      */
-    public function getCountry()
+    public function __get($name)
     {
-        return $this->_country;
+        $getter = 'get'.str_replace('_', '', $name);
+        if (method_exists($this, $getter)) {
+            return $this->{$getter}();
+        }
+        throw new NostoException(sprintf('Property `%s.%s` is not defined.', get_class($this), $name));
     }
 }

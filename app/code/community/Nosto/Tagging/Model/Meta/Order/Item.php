@@ -63,6 +63,40 @@ class Nosto_Tagging_Model_Meta_Order_Item extends Mage_Core_Model_Abstract imple
     protected $_currencyCode;
 
     /**
+     * Constructor.
+     *
+     * Sets up this Value Object.
+     *
+     * @param array $args the object data.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __construct(array $args)
+    {
+        if (!isset($args['productId']) || !is_int($args['productId'])) {
+            throw new InvalidArgumentException(sprintf('%s.productId must be a integer value.', __CLASS__));
+        }
+        if (!isset($args['quantity']) || !is_int($args['quantity']) || !($args['quantity'] > 0)) {
+            throw new InvalidArgumentException(sprintf('%s.quantity must be a integer value above zero.', __CLASS__));
+        }
+        if (!isset($args['name']) || !is_string($args['name']) || empty($args['name'])) {
+            throw new InvalidArgumentException(sprintf('%s.name must be a non-empty string value.', __CLASS__));
+        }
+        if (!isset($args['unitPrice']) || !is_numeric($args['unitPrice'])) {
+            throw new InvalidArgumentException(sprintf('%s.unitPrice must be a numeric value.', __CLASS__));
+        }
+        if (!isset($args['currencyCode']) || !is_string($args['currencyCode']) || empty($args['currencyCode'])) {
+            throw new InvalidArgumentException(sprintf('%s.currencyCode must be a non-empty string value.', __CLASS__));
+        }
+
+        $this->_productId = $args['productId'];
+        $this->_quantity = $args['quantity'];
+        $this->_name = $args['name'];
+        $this->_unitPrice = $args['unitPrice'];
+        $this->_currencyCode = $args['currencyCode'];
+    }
+
+    /**
      * @inheritdoc
      */
     protected function _construct()
@@ -82,16 +116,6 @@ class Nosto_Tagging_Model_Meta_Order_Item extends Mage_Core_Model_Abstract imple
     }
 
     /**
-     * Sets the unique identifier for the item.
-     *
-     * @param string|int $id the product id.
-     */
-    public function setProductId($id)
-    {
-        $this->_productId = $id;
-    }
-
-    /**
      * The quantity of the item included in the order.
      *
      * @return int the quantity.
@@ -99,16 +123,6 @@ class Nosto_Tagging_Model_Meta_Order_Item extends Mage_Core_Model_Abstract imple
     public function getQuantity()
     {
         return $this->_quantity;
-    }
-
-    /**
-     * Sets the item quantity.
-     *
-     * @param int $qty the quantity.
-     */
-    public function setQuantity($qty)
-    {
-        $this->_quantity = $qty;
     }
 
     /**
@@ -122,16 +136,6 @@ class Nosto_Tagging_Model_Meta_Order_Item extends Mage_Core_Model_Abstract imple
     }
 
     /**
-     * Sets the item name.
-     *
-     * @param string $name the item name.
-     */
-    public function setName($name)
-    {
-        $this->_name = $name;
-    }
-
-    /**
      * The unit price of the item included in the order.
      *
      * @return float the unit price.
@@ -142,16 +146,6 @@ class Nosto_Tagging_Model_Meta_Order_Item extends Mage_Core_Model_Abstract imple
     }
 
     /**
-     * Sets the item unit price.
-     *
-     * @param float $price the item unit price.
-     */
-    public function setUnitPrice($price)
-    {
-        $this->_unitPrice = $price;
-    }
-
-    /**
      * The 3-letter ISO code (ISO 4217) for the item currency.
      *
      * @return string the currency ISO code.
@@ -159,43 +153,5 @@ class Nosto_Tagging_Model_Meta_Order_Item extends Mage_Core_Model_Abstract imple
     public function getCurrencyCode()
     {
         return $this->_currencyCode;
-    }
-
-    /**
-     * Sets the items currency code (ISO 4217).
-     *
-     * @param string $code the currency ISO code.
-     */
-    public function setCurrencyCode($code)
-    {
-        $this->_currencyCode = $code;
-    }
-
-    /**
-     * Loads the item info from the Magento order item model.
-     *
-     * @param Mage_Sales_Model_Order_Item $item the item model.
-     */
-    public function loadData(Mage_Sales_Model_Order_Item $item)
-    {
-        switch ($item->getProductType()) {
-            case Mage_Catalog_Model_Product_Type::TYPE_GROUPED:
-                $info = $item->getProductOptionByCode('info_buyRequest');
-                if ($info !== null && isset($info['super_product_config']['product_id'])) {
-                    $this->_productId = (int)$info['super_product_config']['product_id'];
-                } else {
-                    $this->_productId = (int)$item->getProductId();
-                }
-                break;
-
-            default:
-                $this->_productId = (int)$item->getProductId();
-                break;
-        }
-
-        $this->_quantity = (int)$item->getQtyOrdered();
-        $this->_name = $item->getName();
-        $this->_unitPrice = $item->getPriceInclTax();
-        $this->_currencyCode = $item->getOrder()->getOrderCurrencyCode();
     }
 }

@@ -34,7 +34,26 @@
  */
 class Nosto_Tagging_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    /**
+     * Path to store config installation ID.
+     */
     const XML_PATH_INSTALLATION_ID = 'nosto_tagging/installation/id';
+
+    /**
+     * Path to store config nosto product image version.
+     */
+    const XML_PATH_IMAGE_VERSION = 'nosto_tagging/image_options/image_version';
+
+    /**
+     * @inheritdoc
+     */
+    public function quoteEscape($data, $addSlashes = false)
+    {
+        if ($addSlashes === true) {
+            $data = addslashes($data);
+        }
+        return htmlspecialchars($data, ENT_QUOTES, null, false);
+    }
 
     /**
      * Builds a tagging string of the given category including all its parent
@@ -88,5 +107,17 @@ class Nosto_Tagging_Helper_Data extends Mage_Core_Helper_Abstract
             Mage::app()->getCacheInstance()->cleanType('config');
         }
         return $installationId;
+    }
+
+    /**
+     * Return the product image version to include in product tagging.
+     *
+     * @param Mage_Core_Model_Store|null $store the store model or null.
+     *
+     * @return string
+     */
+    public function getProductImageVersion($store = null)
+    {
+        return Mage::getStoreConfig(self::XML_PATH_IMAGE_VERSION, $store);
     }
 }

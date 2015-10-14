@@ -26,45 +26,27 @@
  */
 
 /**
- * Meta data class which holds information about Nosto account billing.
- * This is used during the Nosto account creation.
+ * Adds the `add-to-cart` script.
  *
  * @category Nosto
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Nosto_Tagging_Model_Meta_Account_Billing extends Mage_Core_Model_Abstract implements NostoAccountMetaDataBillingDetailsInterface
+class Nosto_Tagging_Block_Addtocart extends Mage_Core_Block_Template
 {
     /**
-     * @var string country ISO (ISO 3166-1 alpha-2) code for billing details.
-     */
-    protected $_country;
-
-    /**
-     * @inheritdoc
-     */
-    protected function _construct()
-    {
-        $this->_init('nosto_tagging/meta_account_billing');
-    }
-
-    /**
-     * Loads the meta data for the given store.
+     * Render script if the module is enabled for the current store.
      *
-     * @param Mage_Core_Model_Store $store the store view to load the data for.
+     * @return string
      */
-    public function loadData(Mage_Core_Model_Store $store)
+    protected function _toHtml()
     {
-        $this->_country = $store->getConfig('general/country/default');
-    }
+        if (!Mage::helper('nosto_tagging')->isModuleEnabled()
+            || !Mage::helper('nosto_tagging/account')->existsAndIsConnected()
+        ) {
+            return '';
+        }
 
-    /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for billing details country.
-     *
-     * @return string the country ISO code.
-     */
-    public function getCountry()
-    {
-        return $this->_country;
+        return parent::_toHtml();
     }
 }

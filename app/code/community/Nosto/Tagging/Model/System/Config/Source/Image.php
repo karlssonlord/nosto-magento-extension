@@ -26,45 +26,38 @@
  */
 
 /**
- * Meta data class which holds information about Nosto account billing.
- * This is used during the Nosto account creation.
+ * Extension system setting source model for choosing which image version is to
+ * be tagged on the product page.
  *
  * @category Nosto
  * @package  Nosto_Tagging
  * @author   Nosto Solutions Ltd <magento@nosto.com>
  */
-class Nosto_Tagging_Model_Meta_Account_Billing extends Mage_Core_Model_Abstract implements NostoAccountMetaDataBillingDetailsInterface
+class Nosto_Tagging_Model_System_Config_Source_Image
 {
     /**
-     * @var string country ISO (ISO 3166-1 alpha-2) code for billing details.
-     */
-    protected $_country;
-
-    /**
-     * @inheritdoc
-     */
-    protected function _construct()
-    {
-        $this->_init('nosto_tagging/meta_account_billing');
-    }
-
-    /**
-     * Loads the meta data for the given store.
+     * Returns the image version options to choose from.
      *
-     * @param Mage_Core_Model_Store $store the store view to load the data for.
+     * @return array the options.
      */
-    public function loadData(Mage_Core_Model_Store $store)
+    public function toOptionArray()
     {
-        $this->_country = $store->getConfig('general/country/default');
-    }
+        $options = array();
 
-    /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for billing details country.
-     *
-     * @return string the country ISO code.
-     */
-    public function getCountry()
-    {
-        return $this->_country;
+        $entityTypeId = Mage::getSingleton('eav/config')
+            ->getEntityType(Mage_Catalog_Model_Product::ENTITY)
+            ->getId();
+        $collection = Mage::getResourceModel('catalog/product_attribute_collection');
+        $collection->setEntityTypeFilter($entityTypeId);
+        $collection->setFrontendInputTypeFilter('media_image');
+        foreach ($collection as $attribute) {
+            /* @var $attribute Mage_Eav_Model_Entity_Attribute */
+            $options[] = array(
+                'value' => $attribute->getAttributeCode(),
+                'label' => $attribute->getFrontend()->getLabel(),
+            );
+        }
+
+        return $options;
     }
 }
