@@ -34,70 +34,15 @@
  */
 
 /**
- * Util class for representing a XHR response object used when responding to
- * account administration iframe API calls.
+ * Interface for export collections.
  */
-class NostoXhrResponse
+interface NostoExportCollectionInterface
 {
     /**
-     * @var string the `Content-Type` of the response.
-     */
-    public $contentType = 'application/json';
-
-    /**
-     * @var bool the response success flag.
-     */
-    protected $success = false;
-
-    /**
-     * @var string the response redirect url.
-     */
-    protected $redirectUrl;
-
-    /**
-     * Sets the response success state.
+     * Returns the collection as a JSON string.
+     * In the JSON camel case variables are converted into underscore format.
      *
-     * @param boolean $success the state.
-     * @return NostoXhrResponse the response instance.
+     * @return string the JSON.
      */
-    public function setSuccess($success)
-    {
-        $this->success = $success;
-        return $this;
-    }
-
-    /**
-     * Sets the response redirect url.
-     *
-     * @param string $url the url.
-     * @return NostoXhrResponse the response instance.
-     */
-    public function setRedirectUrl($url)
-    {
-        $this->redirectUrl = $url;
-        return $this;
-    }
-
-    /**
-     * Sends the response, i.e. sends it to the browser.
-     * This method also sends the `Content-Type` header for the response data.
-     */
-    public function send()
-    {
-        header('Content-Type: '.$this->contentType);
-        echo $this;
-    }
-
-    /**
-     * Converts the response to a string and returns it.
-     *
-     * @return string the string representation of the response.
-     */
-    public function __toString()
-    {
-        return (string)json_encode(array(
-            'success' => (bool)$this->success,
-            'redirect_url' => (string)$this->redirectUrl,
-        ));
-    }
+    public function getJson();
 }

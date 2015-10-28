@@ -34,52 +34,25 @@
  */
 
 /**
- * Product collection for historical data exports.
- * Supports only items implementing "NostoProductInterface".
+ * Base class for Nosto objects to share basic functionality.
  */
-class NostoExportProductCollection extends NostoProductCollection implements NostoExportCollectionInterface
+abstract class NostoObject
 {
     /**
-     * @inheritdoc
+     * Returns a protected/private property value by invoking it's public getter.
+     *
+     * The getter names are assumed to be the property name in camel case with preceding word "get".
+     *
+     * @param string $name the property name.
+     * @return mixed the property value.
+     * @throws NostoException if public getter does not exist.
      */
-    public function getJson()
+    public function __get($name)
     {
-        $array = array();
-        /** @var NostoProductInterface $item */
-        foreach ($this->getArrayCopy() as $item) {
-            $data = array(
-                'url' => $item->getUrl(),
-                'product_id' => $item->getProductId(),
-                'name' => $item->getName(),
-                'image_url' => $item->getImageUrl(),
-                'price' => Nosto::helper('price')->format($item->getPrice()),
-                'price_currency_code' => strtoupper($item->getCurrencyCode()),
-                'availability' => $item->getAvailability(),
-                'categories' => $item->getCategories(),
-            );
-
-            // Optional properties.
-
-            if ($item->getFullDescription()) {
-                $data['description'] = $item->getFullDescription();
-            }
-            if ($item->getListPrice()) {
-                $data['list_price'] = Nosto::helper('price')->format($item->getListPrice());
-            }
-            if ($item->getBrand()) {
-                $data['brand'] = $item->getBrand();
-            }
-            foreach ($item->getTags() as $type => $tags) {
-                if (is_array($tags) && count($tags) > 0) {
-                    $data[$type] = $tags;
-                }
-            }
-            if ($item->getDatePublished()) {
-                $data['date_published'] = Nosto::helper('date')->format($item->getDatePublished());
-            }
-
-            $array[] = $data;
+        $getter = 'get'.str_replace('_', '', $name);
+        if (method_exists($this, $getter)) {
+            return $this->{$getter}();
         }
-        return json_encode($array);
+        throw new NostoException(sprintf('Property `%s.%s` is not defined.', get_class($this), $name));
     }
 }

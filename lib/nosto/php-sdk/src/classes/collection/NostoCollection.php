@@ -34,52 +34,54 @@
  */
 
 /**
- * Product collection for historical data exports.
- * Supports only items implementing "NostoProductInterface".
+ * Base class for all Nosto object collection classes.
+ * The base class provides the functionality to validate the items added to the collection.
+ * The collection behaves like an array. making it easy to add items to it and iterate over it.
  */
-class NostoExportProductCollection extends NostoProductCollection implements NostoExportCollectionInterface
+abstract class NostoCollection extends ArrayObject
 {
+    /**
+     * @var string the type of items this collection can contain.
+     */
+    protected $validItemType = '';
+
     /**
      * @inheritdoc
      */
-    public function getJson()
+    public function offsetSet($index, $newval)
     {
-        $array = array();
-        /** @var NostoProductInterface $item */
-        foreach ($this->getArrayCopy() as $item) {
-            $data = array(
-                'url' => $item->getUrl(),
-                'product_id' => $item->getProductId(),
-                'name' => $item->getName(),
-                'image_url' => $item->getImageUrl(),
-                'price' => Nosto::helper('price')->format($item->getPrice()),
-                'price_currency_code' => strtoupper($item->getCurrencyCode()),
-                'availability' => $item->getAvailability(),
-                'categories' => $item->getCategories(),
-            );
+        $this->validate($newval);
+        parent::offsetSet($index, $newval);
+    }
 
-            // Optional properties.
+    /**
+     * @inheritdoc
+     */
+    public function append($value)
+    {
+        $this->validate($value);
+        parent::append($value);
+    }
 
-            if ($item->getFullDescription()) {
-                $data['description'] = $item->getFullDescription();
+    /**
+     * Validates that the given value is of correct type.
+     *
+     * @see NostoCollection::$validItemType
+     * @param mixed $value the value.
+     * @throws NostoException if the value is of invalid type.
+     */
+    protected function validate($value)
+    {
+        if (!is_a($value, $this->validItemType)) {
+            $valueType = gettype($value);
+            if ($valueType === 'object') {
+                $valueType = get_class($value);
             }
-            if ($item->getListPrice()) {
-                $data['list_price'] = Nosto::helper('price')->format($item->getListPrice());
-            }
-            if ($item->getBrand()) {
-                $data['brand'] = $item->getBrand();
-            }
-            foreach ($item->getTags() as $type => $tags) {
-                if (is_array($tags) && count($tags) > 0) {
-                    $data[$type] = $tags;
-                }
-            }
-            if ($item->getDatePublished()) {
-                $data['date_published'] = Nosto::helper('date')->format($item->getDatePublished());
-            }
-
-            $array[] = $data;
+            throw new NostoException(sprintf(
+                'Collection supports items of type "%s" (type "%s" given)',
+                $this->validItemType,
+                $valueType
+            ));
         }
-        return json_encode($array);
     }
 }
